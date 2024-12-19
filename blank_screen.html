@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Full Screen Demo</title>
+    <style>
+        .fullscreen {
+            background-color: black;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+    <button onclick="goFullScreen()">Enter Full Screen</button>
+
+    <script>
+        let fullscreenElement;
+
+        function getBrowserFullscreenAPI() {
+            if (document.documentElement.requestFullscreen) {
+                return {
+                    request: 'requestFullscreen',
+                    exit: 'exitFullscreen',
+                    element: 'fullscreenElement',
+                    change: 'fullscreenchange'
+                };
+            } else if (document.documentElement.webkitRequestFullscreen) {
+                return {
+                    request: 'webkitRequestFullscreen',
+                    exit: 'webkitExitFullscreen',
+                    element: 'webkitFullscreenElement',
+                    change: 'webkitfullscreenchange'
+                };
+            } else if (document.documentElement.msRequestFullscreen) {
+                return {
+                    request: 'msRequestFullscreen',
+                    exit: 'msExitFullscreen',
+                    element: 'msFullscreenElement',
+                    change: 'MSFullscreenChange'
+                };
+            }
+        }
+
+        function goFullScreen() {
+            const fsAPI = getBrowserFullscreenAPI();
+            fullscreenElement = document.createElement('div');
+            fullscreenElement.className = 'fullscreen';
+            document.body.appendChild(fullscreenElement);
+            
+            if (fsAPI) {
+                fullscreenElement[fsAPI.request]();
+                document.addEventListener(fsAPI.change, exitHandler);
+            }
+        }
+
+        function exitHandler() {
+            const fsAPI = getBrowserFullscreenAPI();
+            if (!document[fsAPI.element]) {
+                fullscreenElement.remove();
+            }
+        }
+    </script>
+</body>
+</html>
