@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Full Screen Demo</title>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: #00ff88;
+            text-align: center;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 255, 136, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .fullscreen {
+            background-color: black;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            cursor: none;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Press Space or Enter to go full screen</h1>
+    <script>
+        let fullscreenElement;
+
+        document.addEventListener('keydown', function (event) {
+            switch (event.key) {
+                case ' ':
+                case 'Enter':
+                    goFullScreen();
+                    break;
+                default:
+            }
+        });
+
+        function getBrowserFullscreenAPI() {
+            if (document.documentElement.requestFullscreen) {
+                return {
+                    request: 'requestFullscreen',
+                    exit: 'exitFullscreen',
+                    element: 'fullscreenElement',
+                    change: 'fullscreenchange'
+                };
+            } else if (document.documentElement.webkitRequestFullscreen) {
+                return {
+                    request: 'webkitRequestFullscreen',
+                    exit: 'webkitExitFullscreen',
+                    element: 'webkitFullscreenElement',
+                    change: 'webkitfullscreenchange'
+                };
+            } else if (document.documentElement.msRequestFullscreen) {
+                return {
+                    request: 'msRequestFullscreen',
+                    exit: 'msExitFullscreen',
+                    element: 'msFullscreenElement',
+                    change: 'MSFullscreenChange'
+                };
+            }
+        }
+
+        function goFullScreen() {
+            const fsAPI = getBrowserFullscreenAPI();
+            fullscreenElement = document.createElement('div');
+            fullscreenElement.className = 'fullscreen';
+            document.body.appendChild(fullscreenElement);
+
+            if (fsAPI) {
+                fullscreenElement[fsAPI.request]();
+                document.addEventListener(fsAPI.change, exitHandler);
+            }
+        }
+
+        function exitHandler() {
+            const fsAPI = getBrowserFullscreenAPI();
+            if (!document[fsAPI.element]) {
+                fullscreenElement.remove();
+            }
+        }
+    </script>
+</body>
+
+</html>
